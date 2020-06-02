@@ -1,0 +1,94 @@
+
+The hardware specifications for the server mentioned is capable of following:
+
+High  CPU computing due to E7 v4 type of intel processor
+Multi core  threading with 4 sockets of cpu can handle OLTP type of IO transcations.
+Decent memory of size 64 GB of ram is utilized.
+HDD disk also capable of handling the IO with swap space from 2tb .
+Network nics capacity of 10Gbit/s is good specification to handle more traffic
+also can act as redundancey between the 2 nics if configured from nic perspective.
+
+This is mid  server aka loadbalancer between the client requests and web server of real time transacations users data.
+If suppose the request hits are likely 250000 per second we may need to look for.
+
+In case of software lb like nginx allows for running multiple worker processes, which are forked from the nginx control process.
+to handle the server IO traffic.
+If its hardware lb mostly handles by the ASIC type of chip for all IO transcation from main process with other hardware resources.
+
+
+
+The metrics which can be checked are 
+1.Latency or response size: 
+helps to identify the time required to complete the request.
+this determines whether host is slow or not.
+
+2.Connection count/request count:  
+how the SSL Connections with 
+current / Accepted / active / idel / dropped
+
+3.HTTP status code: Frontend and Backend Metrics
+return both frontend and backend relating service errors about bottle necks.
+tracking Responses like - 5xx status to see how much it could affect latency more.
+traffic - sent and received 
+
+4.Distributed tracing:  
+helps to have complete data of each request hit so RCA is easy for broken request.
+
+5.TCP protocol:  
+since it involves HTTPS over TCP - network traffic plays a huge role in this.
+TCP requests with number of packets sent and received to identify also bottleneck in the nics.
+
+6.Host paramaters
+cpu load  on the services
+memory occupancy on the services
+resource contension like main service waiting  for shared services like Database.
+so cpu and memory load on database services.
+nic trace routing 
+finally Connection count, latency, and rejected connections give you insight for the hardwarew capacity of 
+incoming request whether it can handle or not.
+
+
+7.kernel exposes system metrics from 
+/proc/stat    -  gives usage of cpu
+/proc/meminfo  - gives memory info 
+iotop / iostat  - gives disk usuage
+iftop / netstat / nload  - give network usuages trafic bandwith
+iperf - usage of network througput  over tcp protocol.
+
+
+The challenge in handling this will be 
+1.in case of handling such request from hardware level.
+2.should kill idel cpus in scheduled way so cpu threads are available always.
+3.more deeper and detailed monitoring should be filtered to check all the cpu memory and network and disk resources.
+3.In configurations maximum threshold should be configured and tested.
+4.should check for all hosts health status as well not only this application and database nodes aswell.
+5.bottom line is should have an exsisting well monitoring setup in more crisper level to isolate things.
+6.scaling of the nodes incase of sofrwars lb are used so multiple core threads can handle multiple request in paralle.
+7.Because its a lengthy process involving from 
+client --> request encrypted --> lb --> decrypts looks for ssl offloading and malware any injections
+--> encrypy again and send --> backend web app -> decrypts request --> process receives data --> 
+manipulates --> encrypts back -->  lb receives request back and  completes to --> client. 
+
+
+
+--------------------------------------------------------------------------------------------------
+How to Monitor software lb  with tool Instana:
+
+1.For metric monitoring, you need to enable the ngx_http_stub_status_module.
+2.For NGINX distributed  tracing, we need Docker Compose for a container with instana tenant.
+3.Every container on that host will send monitoring data through the single agent. 
+4.This keeps overhead extremely low  and distributed trace is stitched together end to end 
+view of every request or service traces passing through NGINX.
+5.taken care by instana in backend server so complete details available for each request
+5.helps in root casue analysis with proper data for any problemeteic request.
+6.monitoring includes automatic and continuous discovery, dependency mapping, metric monitoring, distributed tracing, 
+anomaly detection, and filter based analytics across the complete trace data set. 
+7.we are aware of this NGINX Proxy is doing and the impact to user requests at all times.
+
+
+
+
+--------------------------------------------------------------------------------------------------
+
+
+
